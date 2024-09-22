@@ -13,7 +13,6 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <ThemeProvider>
-      {/* <MainComponent /> */}
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen 
@@ -24,6 +23,7 @@ export default function App() {
           <Stack.Screen 
             name="DataFetching" 
             component={DataFetchingScreen}
+            options={{ headerShown: false }}
           />
           <Stack.Screen 
             name="Map" 
@@ -39,16 +39,6 @@ export default function App() {
     </ThemeProvider>
   );
 }
-
-// const MainComponent = () => {
-//   const theme = useContext(ThemeContext);
-
-//   return (
-//     <View style={[styles.container, { backgroundColor: theme.background }]}>
-//       <Text style={{ color: theme.text }}>Welcome to Travel Map!</Text>
-//     </View>
-//   );
-// };
 
 const styles = StyleSheet.create({
   container: {

@@ -6,7 +6,7 @@ const getStartedButton = (navigation, theme) => {
     return (
         <TouchableOpacity
             style={[styles.getStartedButton, { backgroundColor: theme.primary }]}
-            onPress={() => navigation.navigate('DataFetching')}
+            onPress={() => navigation.replace('DataFetching')}
         >
             <Text style={styles.getStartedText}>Get Started</Text>
         </TouchableOpacity>
@@ -21,6 +21,7 @@ const WelcomeScreen = ({ navigation }) => {
             <View style={ styles.pictureContainer }>
                 <Image
                     source={require('../assets/welcome-icon.png')}
+                    accessibilityLabel="Travel Map Icon"
                 />
             </View>
             <View style={[styles.textContainer, { backgroundColor: theme.background }]}>
