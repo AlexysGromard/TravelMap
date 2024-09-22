@@ -4,9 +4,14 @@ import { LightThemeColors, DarkThemeColors } from '../styles/colors';
 
 export const ThemeContext = createContext();
 
+/**
+ * ThemeProvider component
+ * This component provides the theme to the application based on the device's color scheme
+ * @param {Object} children - The children components
+ * @returns {JSX.Element} 
+ */
 const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState(Appearance.getColorScheme() === 'dark' ? DarkThemeColors : LightThemeColors);
-    console.log('theme', Appearance.getColorScheme());
 
     useEffect(() => {
         const subscription = Appearance.addChangeListener(({ colorScheme }) => {
