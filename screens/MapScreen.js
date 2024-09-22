@@ -1,9 +1,12 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { View, StyleSheet } from 'react-native';
+import ThemeProvider, { ThemeContext } from '../context/ThemeContext';
 
 const MapScreen = () => {
+    const theme = useContext(ThemeContext);
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
         </View>
     );
 };
@@ -11,7 +14,6 @@ const MapScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
     },

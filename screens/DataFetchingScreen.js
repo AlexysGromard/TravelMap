@@ -1,9 +1,23 @@
-import React, { useContext }  from 'react';
+import React, { useEffect, useContext }  from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import ThemeProvider, { ThemeContext } from '../context/ThemeContext';
 
 const DataFetchingScreen = () => {
     const theme = useContext(ThemeContext);
+
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        // After 5 seconds, navigate to the "Map" screen
+        const timer = setTimeout(() => {
+            navigation.replace('Map'); // Replace 'Map' with the desired screen
+        }, 5000);
+
+        // Cleanup the timer when the component unmounts
+        return () => clearTimeout(timer);
+    }, [navigation]);
+
 
     return (
         <View style={[styles.container, { backgroundColor: theme.primary }]}>
