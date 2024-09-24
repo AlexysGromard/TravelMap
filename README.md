@@ -1,5 +1,3 @@
-<h1 align="center">Travel Map 🌎</h1>
-
 <img src="./docs/github-banner.png" alt="TravelMap banner" align="center" />
 
 ## 📑 Concept
