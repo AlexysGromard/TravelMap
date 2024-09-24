@@ -22,22 +22,31 @@ const CustomHeader = (theme) => (
 
 const Stack = createStackNavigator();
 
+/**
+ * Main component of the application
+ */
 export default function App() {
+  // Use the useColorScheme hook to get the current system theme ('dark' or 'light')
   const colorScheme = useColorScheme();
+
   return (
+    // Provide the theme to all components via the ThemeProvider
     <ThemeProvider>
       <NavigationContainer theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack.Navigator>
+          {/* Welcome screen, no header */}
           <Stack.Screen 
             name="Welcome" 
             component={WelcomeScreen} 
             options={{ headerShown: false }}
           />
+          {/* Data fetching screen, no header */}
           <Stack.Screen 
             name="DataFetching" 
             component={DataFetchingScreen}
             options={{ headerShown: false }}
           />
+          {/* Map screen, with a custom header */}
           <Stack.Screen 
             name="Map" 
             component={MapScreen}
@@ -60,6 +69,7 @@ export default function App() {
               };
             }}
           />
+          {/* Settings screen, displayed as a modal */}
           <Stack.Screen 
             name="Settings" 
             component={SettingsScreen}

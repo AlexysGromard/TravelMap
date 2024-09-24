@@ -2,6 +2,13 @@ import React, { useContext } from 'react';
 import { TouchableOpacity, View, Image, Text, StyleSheet } from 'react-native';
 import ThemeProvider, { ThemeContext } from '../context/ThemeContext';
 
+/**
+ * Function to create the "Get Started" button
+ * Navigates to the 'DataFetching' screen when pressed
+ * @param {Object} navigation - Navigation object for navigating between screens
+ * @param {Object} theme - The current theme (light or dark)
+ * @returns {JSX.Element} 
+ */
 const getStartedButton = (navigation, theme) => {
     return (
         <TouchableOpacity
@@ -13,7 +20,14 @@ const getStartedButton = (navigation, theme) => {
     );
 }
 
+/**
+ * WelcomeScreen component
+ * Displays a welcome message, description, and a button to start the app
+ * @param {Object} navigation - Navigation object for moving between screens
+ * @returns {JSX.Element}
+ */
 const WelcomeScreen = ({ navigation }) => {
+    // Retrieve the current theme from the ThemeContext
     const theme = useContext(ThemeContext);
 
     return (
