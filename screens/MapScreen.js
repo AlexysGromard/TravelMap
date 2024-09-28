@@ -8,12 +8,13 @@ import worldMapData from '../assets/custom.geo.json';
 const MapScreen = () => {
     const theme = useContext(ThemeContext);
 
-    const projection = d3.geoMercator().scale(100).translate([150, 150]);
-    const pathGenerator = d3.geoPath().projection(projection);
+    const pathGenerator = d3.geoPath().projection(
+        d3.geoMercator().fitSize([300, 300], worldMapData)
+    );
   
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <Svg height="100%" width="100%" viewBox="0 0 300 300" style={{ backgroundColor: theme.primary }}>
+            <Svg height="100%" width="100%" viewBox="0 0 300 300" style={{ backgroundColor: theme.oceans }}>
                 {worldMapData.features.map((feature, index) => (
                     <Path
                         key={index}
