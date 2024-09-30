@@ -11,13 +11,23 @@ const MapScreen = () => {
     const [translateX, setTranslateX] = useState(0); // Position horizontale
     const [translateY, setTranslateY] = useState(0); // Position verticale (si besoin de Y)
 
+    const limits = {
+        minX: -190,
+        maxX: 190,
+        minY: 20,
+        maxY: 20,
+    };
+
     const pathGenerator = d3.geoPath().projection(
         d3.geoMercator().scale(100).translate([150, 150])
     );
 
     const onGestureEvent = (event) => {
-        setTranslateX(translateX + event.nativeEvent.translationX); // Mettre à jour la position X
-        setTranslateY(translateY + event.nativeEvent.translationY); // Optionnel pour Y
+        const { translationX, translationY } = event.nativeEvent;
+
+        // Update position with translation into limits
+        setTranslateX(prevX => Math.max(limits.minX, Math.min(limits.maxX, prevX + translationX)));
+        setTranslateY(prevY => Math.max(limits.minY, Math.min(limits.maxY, prevY + translationY)));
     };
 
     return (
