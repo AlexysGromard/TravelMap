@@ -1,6 +1,6 @@
-import React, { useContext, useState, useRef } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { PinchGestureHandler, State } from 'react-native-gesture-handler';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import Svg, { Path } from 'react-native-svg';
 import * as d3 from 'd3-geo';
 import worldMapData from '../assets/custom.geo.json';
@@ -8,35 +8,37 @@ import { ThemeContext } from '../context/ThemeContext';
 
 const MapScreen = () => {
     const theme = useContext(ThemeContext);
-
-    const scale = useRef(1); // Initial scale is 1
-    const [lastScale, setLastScale] = useState(1);
+    const [translateX, setTranslateX] = useState(0); // Position horizontale
+    const [translateY, setTranslateY] = useState(0); // Position verticale (si besoin de Y)
 
     const pathGenerator = d3.geoPath().projection(
         d3.geoMercator().scale(100).translate([150, 150])
     );
 
-    // Configuration de l'événement de geste de pincement pour le zoom
-    const onPinchEvent = event => {
-        scale.current = lastScale * event.nativeEvent.scale;
-        console.log(scale.current);
-    };
-
-    const onPinchStateChange = (event) => {
-        if (event.nativeEvent.oldState === State.ACTIVE) {
-            setLastScale(scale.current
-            );
-        }
+    const onGestureEvent = (event) => {
+        setTranslateX(translateX + event.nativeEvent.translationX); // Mettre à jour la position X
+        setTranslateY(translateY + event.nativeEvent.translationY); // Optionnel pour Y
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <PinchGestureHandler onGestureEvent={onPinchEvent} onHandlerStateChange={onPinchStateChange}>
+        <PanGestureHandler
+            onGestureEvent={onGestureEvent}
+            onHandlerStateChange={({ nativeEvent }) => {
+                if (nativeEvent.state === State.END) {
+                    // Optionnel : Réinitialiser ou fixer la position après le geste
+                }
+            }}
+        >
+            <View style={[styles.container, { backgroundColor: theme.background }]}>
                 <Svg 
-                    height="100%" 
-                    width="100%" 
-                    viewBox={`0 0 300 300`} 
-                    style={{ backgroundColor: theme.oceans, transform: [{ scale: scale.current }] }}
+                    width="200%"  // Double la largeur du SVG pour permettre un défilement plus large
+                    height="200%" // Idem pour la hauteur si nécessaire
+                    viewBox="-200 0 700 300"
+                    style={{
+                        backgroundColor: theme.oceans,
+                        transform: [{ translateX: translateX }, { translateY: translateY }], // Appliquer la translation
+                        overflow: 'visible' // Permet d'afficher le contenu en dehors de la vue
+                    }}
                 >
                     {worldMapData.features.map((feature, index) => (
                         <Path
@@ -48,14 +50,15 @@ const MapScreen = () => {
                         />
                     ))}
                 </Svg>
-            </PinchGestureHandler>
-        </View>
+            </View>
+        </PanGestureHandler>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        overflow: 'hidden', // Éviter le découpage du SVG en dehors de la vue
         alignItems: 'center',
         justifyContent: 'center',
     },
