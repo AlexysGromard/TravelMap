@@ -9,7 +9,9 @@ import { ThemeContext } from '../context/ThemeContext';
 const MapScreen = () => {
     const theme = useContext(ThemeContext);
     const [translateX, setTranslateX] = useState(0); // Position horizontale
-    const [translateY, setTranslateY] = useState(0); // Position verticale (si besoin de Y)
+    const [translateY, setTranslateY] = useState(0); // Position verticale
+    const [lastOffsetX, setLastOffsetX] = useState(0); // Dernière position horizontale avant le geste
+    const [lastOffsetY, setLastOffsetY] = useState(0); // Dernière position verticale avant le geste
 
     const limits = {
         minX: -190,
@@ -23,19 +25,25 @@ const MapScreen = () => {
     );
 
     const onGestureEvent = (event) => {
-        const { translationX, translationY } = event.nativeEvent;
+        const { translationX, translationY, state } = event.nativeEvent;
 
-        // Update position with translation into limits
-        setTranslateX(prevX => Math.max(limits.minX, Math.min(limits.maxX, prevX + translationX)));
-        setTranslateY(prevY => Math.max(limits.minY, Math.min(limits.maxY, prevY + translationY)));
+        // Update position based on translation
+        setTranslateX(
+            Math.max(limits.minX, Math.min(limits.maxX, lastOffsetX + translationX))
+        );
+        setTranslateY(
+            Math.max(limits.minY, Math.min(limits.maxY, lastOffsetY + translationY))
+        );
     };
 
     return (
         <PanGestureHandler
             onGestureEvent={onGestureEvent}
             onHandlerStateChange={({ nativeEvent }) => {
+                // Update the original position at the end of the gesture
                 if (nativeEvent.state === State.END) {
-                    // Optionnel : Réinitialiser ou fixer la position après le geste
+                    setLastOffsetX(lastOffsetX + nativeEvent.translationX);
+                    setLastOffsetY(lastOffsetY + nativeEvent.translationY);
                 }
             }}
         >
