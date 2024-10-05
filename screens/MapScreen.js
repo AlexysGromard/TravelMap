@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useContext, useRef, useState } from 'react';
+import { View, StyleSheet, Animated } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import Svg, { Path } from 'react-native-svg';
 import * as d3 from 'd3-geo';
@@ -8,8 +8,8 @@ import { ThemeContext } from '../context/ThemeContext';
 
 const MapScreen = () => {
     const theme = useContext(ThemeContext);
-    const [translateX, setTranslateX] = useState(0); // Position horizontale
-    const [translateY, setTranslateY] = useState(0); // Position verticale
+    const translateX = useRef(new Animated.Value(0)).current; // Position horizontale
+    const translateY = useRef(new Animated.Value(0)).current; // Position verticale
     const [lastOffsetX, setLastOffsetX] = useState(0); // Dernière position horizontale avant le geste
     const [lastOffsetY, setLastOffsetY] = useState(0); // Dernière position verticale avant le geste
 
@@ -25,15 +25,28 @@ const MapScreen = () => {
     );
 
     const onGestureEvent = (event) => {
-        const { translationX, translationY, state } = event.nativeEvent;
-
+        const { translationX, translationY } = event.nativeEvent;
+    
         // Update position based on translation
-        setTranslateX(
-            Math.max(limits.minX, Math.min(limits.maxX, lastOffsetX + translationX))
-        );
-        setTranslateY(
-            Math.max(limits.minY, Math.min(limits.maxY, lastOffsetY + translationY))
-        );
+        const newTranslateX = Math.max(limits.minX, Math.min(limits.maxX, lastOffsetX + translationX));
+        const newTranslateY = Math.max(limits.minY, Math.min(limits.maxY, lastOffsetY + translationY));
+    
+        // Update the refs directly
+        translateX.setValue(newTranslateX);
+        translateY.setValue(newTranslateY);
+    
+        // Start animation when the gesture begins
+        Animated.timing(translateX, {
+            toValue: newTranslateX,
+            duration: 200,
+            useNativeDriver: false,
+        }).start();
+    
+        Animated.timing(translateY, {
+            toValue: newTranslateY,
+            duration: 200,
+            useNativeDriver: false,
+        }).start();
     };
 
     return (
@@ -47,14 +60,18 @@ const MapScreen = () => {
                 }
             }}
         >
-            <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <Animated.View 
+                style={[styles.container, { 
+                        backgroundColor: theme.background,
+                        transform: [{ translateX: translateX }, { translateY: translateY }],
+                    }
+                ]}>
                 <Svg 
                     width="200%"  // Double la largeur du SVG pour permettre un défilement plus large
                     height="200%" // Idem pour la hauteur si nécessaire
                     viewBox="-200 0 700 300"
                     style={{
                         backgroundColor: theme.oceans,
-                        transform: [{ translateX: translateX }, { translateY: translateY }], // Appliquer la translation
                         overflow: 'visible' // Permet d'afficher le contenu en dehors de la vue
                     }}
                 >
@@ -68,7 +85,7 @@ const MapScreen = () => {
                         />
                     ))}
                 </Svg>
-            </View>
+            </Animated.View>
         </PanGestureHandler>
     );
 };
@@ -76,7 +93,7 @@ const MapScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        overflow: 'hidden', // Éviter le découpage du SVG en dehors de la vue
+        overflow: 'visible', // Éviter le découpage du SVG en dehors de la vue
         alignItems: 'center',
         justifyContent: 'center',
     },
