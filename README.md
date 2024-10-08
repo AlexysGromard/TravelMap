@@ -1,7 +1,13 @@
 <img src="./docs/github-banner.png" alt="TravelMap banner" align="center" />
 
+
+
 ## 📑 Concept
 TravelMap is an application that scans the metadata of photos from a user's gallery to determine the locations and dates of past trips. It then allows users to visualize these locations on an interactive map and add personal notes or additional details for each trip.
+
+<img src="https://img.shields.io/badge/Language-React%20Native-blue" alt="React Native" align="center" />
+<img src="https://img.shields.io/github/last-commit/AlexysGromard/TravelMap" alt="Last update" align="center" />
+
 
 ## 🛠 Main features
 
