@@ -8,49 +8,40 @@ import { ThemeContext } from '../context/ThemeContext';
 
 const MapScreen = () => {
     const theme = useContext(ThemeContext);
-    const translateX = useRef(new Animated.Value(0)).current; // Position horizontale
-    const translateY = useRef(new Animated.Value(0)).current; // Position verticale
-    const scale = useRef(new Animated.Value(1)).current; // État pour le zoom
-    const [lastScale, setLastScale] = useState(1); // Dernier zoom avant le geste
-    const [lastOffsetX, setLastOffsetX] = useState(0); // Dernière position horizontale avant le geste
-    const [lastOffsetY, setLastOffsetY] = useState(0); // Dernière position verticale avant le geste
+    const translateX = useRef(new Animated.Value(0)).current;
+    const translateY = useRef(new Animated.Value(0)).current;
+    const scale = useRef(new Animated.Value(1)).current;
+    const [lastScale, setLastScale] = useState(1);
+    const [lastOffsetX, setLastOffsetX] = useState(0);
+    const [lastOffsetY, setLastOffsetY] = useState(0);
 
-    const limits = {
-        minX: -190,
-        maxX: 190,
-        minY: 20,
-        maxY: 20,
-    };
-
+    // Calculer la projection et les chemins pour chaque pays
     const pathGenerator = d3.geoPath().projection(
         d3.geoMercator().scale(100).translate([150, 150])
     );
 
     const onPanGestureEvent = (event) => {
         const { translationX, translationY } = event.nativeEvent;
+        
+        // Ajuster les limites de déplacement en fonction du zoom
+        const newTranslateX = Math.max(-400, Math.min(400, lastOffsetX + translationX));
+        const newTranslateY = Math.max(-400, Math.min(400, lastOffsetY + translationY));
 
-        // Update position based on translation
-        const newTranslateX = Math.max(limits.minX, Math.min(limits.maxX, lastOffsetX + translationX));
-        const newTranslateY = Math.max(limits.minY, Math.min(limits.maxY, lastOffsetY + translationY));
-
-        // Update the refs directly
         translateX.setValue(newTranslateX);
         translateY.setValue(newTranslateY);
     };
 
     const onPinchGestureEvent = Animated.event(
         [{ nativeEvent: { scale: scale } }],
-        { useNativeDriver: false } // Utiliser false pour un meilleur contrôle
+        { useNativeDriver: false }
     );
 
     return (
-        <PinchGestureHandler 
+        <PinchGestureHandler
             onGestureEvent={onPinchGestureEvent}
             onHandlerStateChange={({ nativeEvent }) => {
                 if (nativeEvent.state === State.END) {
-                    // Mettre à jour le dernier zoom
                     setLastScale(lastScale * nativeEvent.scale);
-                    // Réinitialiser l'échelle à 1 pour le prochain geste
                     scale.setValue(1); 
                 }
             }}
@@ -59,7 +50,6 @@ const MapScreen = () => {
                 <PanGestureHandler
                     onGestureEvent={onPanGestureEvent}
                     onHandlerStateChange={({ nativeEvent }) => {
-                        // Update the original position at the end of the gesture
                         if (nativeEvent.state === State.END) {
                             setLastOffsetX(lastOffsetX + nativeEvent.translationX);
                             setLastOffsetY(lastOffsetY + nativeEvent.translationY);
@@ -74,28 +64,28 @@ const MapScreen = () => {
                                     { translateY: translateY },
                                     { scale: scale.interpolate({
                                         inputRange: [0.5, 2],
-                                        outputRange: [lastScale * 0.5, lastScale * 2], // Appliquer le dernier zoom
-                                        extrapolate: 'clamp'
+                                        outputRange: [lastScale * 0.5, lastScale * 2],
+                                        extrapolate: 'clamp',
                                     }) }
                                 ],
                             }
                         ]}>
                         <Svg 
-                            width="200%"  // Double la largeur du SVG pour permettre un défilement plus large
-                            height="200%" // Idem pour la hauteur si nécessaire
+                            width="200%" 
+                            height="200%" 
                             viewBox="-200 0 700 300"
                             style={{
                                 backgroundColor: theme.oceans,
-                                overflow: 'visible' // Permet d'afficher le contenu en dehors de la vue
+                                overflow: 'visible'
                             }}
                         >
                             {worldMapData.features.map((feature, index) => (
                                 <Path
                                     key={index}
                                     d={pathGenerator(feature)}
-                                    fill={theme.background} // Couleur du pays
-                                    stroke={theme.text} // Couleur de la bordure
-                                    strokeWidth={0.1} // Épaisseur de la bordure
+                                    fill={theme.land}
+                                    stroke={theme.text}
+                                    strokeWidth={0.1}
                                 />
                             ))}
                         </Svg>
@@ -109,7 +99,7 @@ const MapScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        overflow: 'visible', // Éviter le découpage du SVG en dehors de la vue
+        overflow: 'visible',
         alignItems: 'center',
         justifyContent: 'center',
     },
