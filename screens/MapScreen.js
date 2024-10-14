@@ -24,8 +24,8 @@ const MapScreen = () => {
         const { translationX, translationY } = event.nativeEvent;
         
         // Ajuster les limites de déplacement en fonction du zoom
-        const newTranslateX = Math.max(-400, Math.min(400, lastOffsetX + translationX));
-        const newTranslateY = Math.max(-400, Math.min(400, lastOffsetY + translationY));
+        const newTranslateX = Math.max(-200, Math.min(200, lastOffsetX + translationX));
+        const newTranslateY = Math.max(-100, Math.min(100, lastOffsetY + translationY));
 
         translateX.setValue(newTranslateX);
         translateY.setValue(newTranslateY);
